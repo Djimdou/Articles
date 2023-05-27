@@ -15,7 +15,7 @@ library(copula) # for claytonCopula
 
 # W = 1:m/m # grid for the x-axis
 
-Theta0 = 4
+Theta0 = 1.5
 
 Theta = seq(from=0.1,to=5,by=0.1) # c(0.1,1,3,5)  # 7 seems not good a value for the numerical approximations later
 
@@ -44,15 +44,18 @@ Y <- XY[,2]
 U1 = pweibull(X, shape=alpha, scale = beta, lower.tail = TRUE, log.p = FALSE)
 U2 = pweibull(Y, shape=alpha, scale = beta, lower.tail = TRUE, log.p = FALSE)
 
-Cn_star = rep(NA,times=length(Z))
+V = Cn_star = rep(NA,times=length(Z))
 
 for(i in 1:length(Z)){
-  Cn_star[i] = (sum((U1 <= U1[i])*(U2 <= U2[i])))/length(Z)
+  V[i] = (sum((U1 <= U1[i])*(U2 <= U2[i])))/(length(Z)-1)
+  Cn_star[i] = (sum((U1 > U1[i])*(U2 > U2[i])))/length(Z)
+  #Cn_star[i] = (sum((U1 <= U1[i])*(U2 <= U2[i])))/length(Z)
 }
 
 # Empirical distribution of Cn_star
 
 Kn_star = ecdf(Cn_star)
+Kn = ecdf(V)
 
 # # Distance
 
@@ -88,15 +91,25 @@ for(t in 1:length(Theta)){
   }
 }
 
-# plot(Z,K_star[40,],type="l")
+K = matrix(NA,nrow=length(Theta),ncol=length(Z))
 
-dn = rep(NA,times=length(Theta))
+for(t in 1:length(Theta)){
+  K[t,] = Z*(1+(1/Theta[t])*(1-Z**Theta[t]))
+}
+
+# plot(Z,K_true,type="l")
+
+d = dn = rep(NA,times=length(Theta))
 
 for(t in 1:length(Theta)){
   dn[t] = max(abs(Kn_star(Z) - K_star[t,]))
+  d[t] = max(abs(Kn(Z)-K[t,]))
 }
 
 # plot(Z,Kn_star(Z),type="l",col="blue");lines(Z,K_star[10,],col="green")
 
-plot(Theta,dn,type="l")
+Ylim = range(c(d,dn))
+
+plot(x=Theta,y=dn,type="l",col="blue",ylim=Ylim,xlab="theta")
+lines(x=Theta,y=d,col="green")
 abline(v=Theta0,col='red')
