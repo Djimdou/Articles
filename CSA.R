@@ -15,7 +15,7 @@ library(copula) # for claytonCopula
 
 # W = 1:m/m # grid for the x-axis
 
-Theta0 = 1.5
+Theta0 = 3
 
 Theta = seq(from=0.1,to=5,by=0.1) # c(0.1,1,3,5)  # 7 seems not good a value for the numerical approximations later
 
@@ -48,8 +48,7 @@ V = Cn_star = rep(NA,times=length(Z))
 
 for(i in 1:length(Z)){
   V[i] = (sum((U1 <= U1[i])*(U2 <= U2[i])))/(length(Z)-1)
-  Cn_star[i] = (sum((U1 > U1[i])*(U2 > U2[i])))/length(Z)
-  #Cn_star[i] = (sum((U1 <= U1[i])*(U2 <= U2[i])))/length(Z)
+  Cn_star[i] = (sum((U1 > U1[i])*(U2 > U2[i])))/(length(Z)-1)
 }
 
 # Empirical distribution of Cn_star
@@ -110,6 +109,7 @@ for(t in 1:length(Theta)){
 
 Ylim = range(c(d,dn))
 
-plot(x=Theta,y=dn,type="l",col="blue",ylim=Ylim,xlab="theta")
-lines(x=Theta,y=d,col="green")
-abline(v=Theta0,col='red')
+plot(x=Theta,y=dn,type="l",col="blue",ylim=Ylim,xlab="theta",lwd = 3)
+lines(x=Theta,y=d,col="green",lwd = 3)
+abline(v=Theta0,col='red',lwd = 3)
+legend("topright",legend=c("dn","d",expression(theta[0])),lwd = 3,col=c("blue", "green","red"),lty=1,cex=1.25,bty="n")
