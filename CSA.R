@@ -15,12 +15,12 @@ library(copula) # for claytonCopula
 
 # W = 1:m/m # grid for the x-axis
 
-Theta0 = 3
+Theta0 = 2.5
 
 Theta = seq(from=0.1,to=5,by=0.1) # c(0.1,1,3,5)  # 7 seems not good a value for the numerical approximations later
 
-A = seq(from=0.01,to=1/2,by=0.01)
-Z = seq(from=0.01, to=0.99,by=0.01)
+A = seq(from=0.01,to=1/2,by=0.005)  # 
+Z = seq(from=0.01, to=0.99,by=0.005) # 
 M = 10**15
 
 cop <- claytonCopula(param=Theta0,dim=2)
@@ -36,7 +36,7 @@ MyCopula <- mvdc(copula=cop, # copula for (F(X), F(Y))
                  margins=c("weibull","weibull"), # Weibull distribution for margins X and Y
                  paramMargins=list(shape=alpha,scale=beta)) # alpha:shape, beta:scale
 
-#set.seed(1)
+set.seed(1)
 XY <- rMvdc(n=length(Z),MyCopula)
 X <- XY[,1]
 Y <- XY[,2]
@@ -48,7 +48,7 @@ V = Cn_star = rep(NA,times=length(Z))
 
 for(i in 1:length(Z)){
   V[i] = (sum((U1 <= U1[i])*(U2 <= U2[i])))/(length(Z)-1)
-  Cn_star[i] = (sum((U1 > U1[i])*(U2 > U2[i])))/(length(Z)-1)
+  Cn_star[i] = (sum((U1 > U1[i])*(U2 > U2[i])))/(length(Z))
 }
 
 # Empirical distribution of Cn_star
@@ -98,18 +98,20 @@ for(t in 1:length(Theta)){
 
 # plot(Z,K_true,type="l")
 
-d = dn = rep(NA,times=length(Theta))
+dn = dn_star = rep(NA,times=length(Theta))
 
 for(t in 1:length(Theta)){
-  dn[t] = max(abs(Kn_star(Z) - K_star[t,]))
-  d[t] = max(abs(Kn(Z)-K[t,]))
+  dn_star[t] = max(abs(Kn_star(Z) - K_star[t,]))
+  dn[t] = max(abs(Kn(Z)-K[t,]))
 }
 
 # plot(Z,Kn_star(Z),type="l",col="blue");lines(Z,K_star[10,],col="green")
 
-Ylim = range(c(d,dn))
+Ylim = range(c(dn_star,dn))
 
-plot(x=Theta,y=dn,type="l",col="blue",ylim=Ylim,xlab="theta",lwd = 3)
-lines(x=Theta,y=d,col="green",lwd = 3)
+plot(x=Theta,y=dn_star,type="l",col="blue",ylim=Ylim,xlab=expression(theta),ylab="",lwd = 3)
+lines(x=Theta,y=dn,col="green",lwd = 3)
 abline(v=Theta0,col='red',lwd = 3)
-legend("topright",legend=c("dn","d",expression(theta[0])),lwd = 3,col=c("blue", "green","red"),lty=1,cex=1.25,bty="n")
+legend("bottomright",legend=c(expression(d[n]^"*"),expression(d[n]),expression(theta[0])),lwd = 3,col=c("blue", "green","red"),lty=1,cex=1.25,bty="n")
+
+set.seed(NULL)
