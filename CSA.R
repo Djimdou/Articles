@@ -15,12 +15,12 @@ library(copula) # for claytonCopula
 
 # W = 1:m/m # grid for the x-axis
 
-Theta0 = 2.5
+Theta0 = 4
 
 Theta = seq(from=0.1,to=5,by=0.1) # c(0.1,1,3,5)  # 7 seems not good a value for the numerical approximations later
 
-A = seq(from=0.01,to=1/2,by=0.005)  # 
-Z = seq(from=0.01, to=0.99,by=0.005) # 
+A = seq(from=0.01,to=1/2,by=0.0025)  # 
+Z = seq(from=0.01, to=0.99,by=0.0025) # 
 M = 10**15
 
 cop <- claytonCopula(param=Theta0,dim=2)
@@ -112,6 +112,6 @@ Ylim = range(c(dn_star,dn))
 plot(x=Theta,y=dn_star,type="l",col="blue",ylim=Ylim,xlab=expression(theta),ylab="",lwd = 3)
 lines(x=Theta,y=dn,col="green",lwd = 3)
 abline(v=Theta0,col='red',lwd = 3)
-legend("bottomright",legend=c(expression(d[n]^"*"),expression(d[n]),expression(theta[0])),lwd = 3,col=c("blue", "green","red"),lty=1,cex=1.25,bty="n")
+legend("topright",legend=c(expression(d[n]^"*"),expression(d[n]),expression(theta[0])),lwd = 3,col=c("blue", "green","red"),lty=1,cex=1.25,bty="n")
 
-set.seed(NULL)
+# set.seed(NULL)
