@@ -15,7 +15,7 @@ library(copula) # for claytonCopula
 
 # W = 1:m/m # grid for the x-axis
 
-Theta0 = 1
+Theta0 = 2.25
 
 Theta = seq(from=0.1,to=5,by=0.1) # c(0.1,1,3,5)  # 7 seems not good a value for the numerical approximations later
 
@@ -36,7 +36,7 @@ MyCopula <- mvdc(copula=cop, # copula for (F(X), F(Y))
                  margins=c("weibull","weibull"), # Weibull distribution for margins X and Y
                  paramMargins=list(shape=alpha,scale=beta)) # alpha:shape, beta:scale
 
-#set.seed(1)
+set.seed(1)
 XY <- rMvdc(n=length(Z),MyCopula)
 X <- XY[,1]
 Y <- XY[,2]
@@ -112,6 +112,12 @@ Ylim = range(c(dn_star,dn))
 plot(x=Theta,y=dn_star,type="l",col="blue",ylim=Ylim,xlab=expression(theta),ylab="",lwd = 3)
 lines(x=Theta,y=dn,col="green",lwd = 3)
 abline(v=Theta0,col='red',lwd = 2, lty=2)
-legend("topright",legend=c(expression(d[n]^"*"),expression(d[n]),bquote(theta[0] == .(Theta0))),lwd = c(3,3,2),col=c("blue", "green","red"),lty=c(1,1,2),cex=1.25,bty="n")
+legend("bottomright",legend=c(expression(d[n]^"*"),expression(d[n]),bquote(theta[0] == .(Theta0))),lwd = c(3,3,2),col=c("blue", "green","red"),lty=c(1,1,2),cex=1.25,bty="n")
+
+# Write to csv for LaTex plots
+
+write.csv(x=data.frame(cbind(Theta,dn_star,dn,Theta0=rep(Theta0,times=length(Theta)))),
+          file=paste0("/Users/magloireloudeguidjimdou/Documents/Articles/PhD - Chapter 2/KSStatistics-2.csv"),
+          row.names = FALSE)
 
 # set.seed(NULL)
