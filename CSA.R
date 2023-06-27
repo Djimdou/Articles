@@ -15,11 +15,11 @@ library(copula) # for claytonCopula
 
 # W = 1:m/m # grid for the x-axis
 
-Theta0 = 1.25
+Theta0 = 1
 
 Theta = seq(from=0.1,to=5,by=0.1) # c(0.1,1,3,5)  # 7 seems not good a value for the numerical approximations later
 
-Z = seq(from=0.01, to=0.99,by=0.0025) # 
+Z = seq(from=0.01, to=0.99,by=0.005) # 
 A = Z[Z<=1/2] # seq(from=0.01,to=1/2,by=0.005)  # 
 M = 10**15
 
@@ -36,7 +36,7 @@ MyCopula <- mvdc(copula=cop, # copula for (F(X), F(Y))
                   margins=c("weibull","weibull"), # Weibull distribution for margins X and Y
                   paramMargins=list(shape=alpha,scale=beta)) # alpha:shape, beta:scale
 
-# set.seed(1)
+set.seed(1)
 
 XY <- rMvdc(n=length(Z),MyCopula)
 X <- XY[,1]
@@ -150,6 +150,8 @@ for(t in 1:length(Theta)){
   dn[t] = max(abs(Kn(Z)-K[t,]))
 }
 
+Thetan = Theta[which.min(dn)]
+Thetan_star = Theta[which.min(dn_star)]
 # plot(Z,Kn_star(Z),type="l",col="blue");lines(Z,K_star[10,],col="green")
 
 Ylim = range(c(dn_star,dn))
@@ -172,12 +174,41 @@ Ylim = range(c(k_star[t,],density_Cn_star[t,]),xlab="z",ylab="density")
 plot(Z,k_star[t,],type="l",col="blue")
 lines(Z,density_Cn_star[t,],col='red')
 
-max(abs(density_Cn_star-k_star[which.min(dn_star),]))
 
 # Write to csv for LaTex plots
 
-write.csv(x=data.frame(cbind(Theta,dn_star,dn,Theta0=rep(Theta0,times=length(Theta)))),
-          file=paste0("/Users/magloireloudeguidjimdou/Documents/Articles/PhD - Chapter 2/KSStatistics-1_25.csv"),
+write.csv(x=data.frame(cbind(Theta,dn_star,dn,Theta0=rep(Theta0,times=length(Theta)),Thetan=rep(Thetan,times=length(Theta)),Thetan_star=rep(Thetan_star,times=length(Theta)))),
+          file=paste0("/Users/magloireloudeguidjimdou/Documents/Articles/PhD - Chapter 2/KSStatistics-2.csv"),
           row.names = FALSE)
 
 # set.seed(NULL)
+
+
+
+
+
+
+Densities = read.csv(file="/Users/magloireloudeguidjimdou/Documents/Articles/PhD - Chapter 2/clayton_density_simu.csv",header = TRUE)
+
+max(abs(Densities[,"V2"]-Densities[,"X1"]))
+max(abs(Densities[,"V3"]-Densities[,"X2"]))
+
+Ylim=range(Densities[,c("V2","X1")])
+plot(Densities[,c("Z","V2")],type="l",ylim=Ylim)
+lines(Densities[,c("Z","X1")])
+
+Distances1 = read.csv(file="/Users/magloireloudeguidjimdou/Documents/Articles/PhD - Chapter 2/KSStatistics-1_25.csv",header = TRUE)
+Distances2 = read.csv(file="/Users/magloireloudeguidjimdou/Documents/Articles/PhD - Chapter 2/KSStatistics-3.csv",header = TRUE)
+
+Ylim=range(Distances1[,c("dn_star","dn")])
+plot(Distances1[,c("Theta","dn_star")],type="l",ylim=Ylim)
+lines(Distances1[,c("Theta","dn")])
+
+Distances1[which.min(Distances1[,"dn_star"]),"Theta"]
+Distances1[which.min(Distances1[,"dn"]),"Theta"]
+
+Distances2[which.min(Distances2[,"dn_star"]),"Theta"]
+Distances2[which.min(Distances2[,"dn"]),"Theta"]
+
+
+
